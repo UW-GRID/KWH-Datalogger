@@ -59,3 +59,5 @@ date >> /kwh/log/boot.log
 sudo cp /kwh/boot/kwh_scheduler.cron /var/spool/cron/crontabs/pi >> /kwh/log/boot.log
 sudo chmod 600 /var/spool/cron/crontabs/pi >> /kwh/log/boot.log
 sudo systemctl start cron.service
+
+#adding something to force a commit, tacohen
