@@ -12,7 +12,7 @@ echo "This installer requires that the RPi be rebooted when complete"
 echo "If you need to save any work, do not enter anything that starts with \"y\""
 echo ""
 echo "Would you like to continue with installation(y/n)?"
-read ans
+read -r ans
 if [ "${ans:0:1}" != "y" ]; then
     echo ""
     echo "Exiting...Relaunch the installer.sh when you are ready."
@@ -58,7 +58,7 @@ if [ ! -d /kwh/log ]; then
 fi
 
 # Download pigpio code from github
-cd /kwh/lib
+cd /kwh/lib || exit
 if [ ! -d pigpio ]; then
   echo ""
   echo "Downloading pigpio code to /kwh/lib"
@@ -95,6 +95,8 @@ wait
 cp /kwh/tmp/.bashrc /home/pi/.bashrc
 wait
 # Source the aliases functions and environment variables
+# shellcheck source=src/.bashrc
+# shellcheck disable=SC1091
 . ~/.bashrc
 wait
 sudo cp /kwh/tmp/autologin@.service /etc/systemd/system/autologin@.service
@@ -170,7 +172,7 @@ wait
 sudo pip3 install minimalmodbus
 
 # Download sakis3g
-cd /kwh/lib
+cd /kwh/lib || exit
 if [ ! -d sakis3g ]; then
   git clone https://github.com/Trixarian/sakis3g-source.git sakis3g
 fi
@@ -184,6 +186,7 @@ sudo cp /kwh/lib/sakis3g/build/sakis3gz /usr/bin/sakis3g
 wait
 
 # Build database structure
+# shellcheck disable=SC2024
 sudo mysql < /kwh/other/MySQL/kwh_db_structure.sql
 
 # Disable GUI boot to lower power consumption and free up resources
@@ -203,5 +206,5 @@ echo ""
 echo "Rebooting now is highly recommended as some communications will be erroring and filling log files"
 echo "However, if you need to stop the reboot, you can use \"ctrl+c\" to kill the program without reboot"
 echo "Press enter to reboot now..."
-read ans
+read -r ans
 sudo shutdown -r now

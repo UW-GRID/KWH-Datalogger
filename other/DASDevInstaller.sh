@@ -18,7 +18,7 @@ echo "This installer requires that the RPi be rebooted when complete"
 echo "If you need to save any work, do not answer anything that starts with \"y\""
 echo ""
 echo "Would you like to continue with installation(y/n)?"
-read ans
+read -r ans
 if [ "${ans:0:1}" != "y" ]; then
     echo ""
     echo "Exiting...Relaunch the DASDevInstaller.sh when you are ready."
@@ -90,7 +90,7 @@ echo "Step (2)"
 echo "Downloading pigpio code to /usr/local/pigpio"
 echo "Credit: GitHub - joan2937"
 wait
-cd /usr/local
+cd /usr/local || exit
 if [ ! -d pigpio ]; then
     sudo git clone https://github.com/joan2937/pigpio.git
     status=$?
@@ -128,6 +128,8 @@ wait
 cp /kwh/moves/.bashrc /home/pi/.bashrc
 wait
 # Source the aliases, functions, and environment variables
+# shellcheck source=src/.bashrc
+# shellcheck disable=SC1091
 . ~/.bashrc
 wait
 sudo cp /kwh/moves/autologin@.service /etc/systemd/system/autologin@.service
@@ -182,7 +184,7 @@ echo ""
 echo "Installing hub to simplify DAS development via GitHub"
 echo "Credit: https://github.com/github/hub.git"
 
-cd /kwh
+cd /kwh || exit
 
 if [ ! -f go1.10.2.linux-armv6l.tar.gz ] && [ ! -d /usr/local/go ]; then
     echo ""
@@ -221,7 +223,7 @@ fi
 if [[ ! "$1" =~ .+ ]] || [ "$1" = "1" ] || [ "$1" = "2" ] || [ "$1" = "3" ] || [ "$1" = "4" ]; then
 echo ""
 echo "Downloading hub into /usr/local ..."
-cd /usr/local
+cd /usr/local || exit
 wait
 sudo git clone https://github.com/github/hub.git
 status=$?
@@ -233,7 +235,7 @@ fi
 
 echo ""
 echo "Installing hub..."
-cd /usr/local/hub
+cd /usr/local/hub || exit
 sudo ./script/build
 wait
 
@@ -257,6 +259,7 @@ echo "Use \"git config\" for help on resetting these values, or edit the file ~/
 # Set to Seattle Config
 echo ""
 echo "Setting config to Seattle RPi DAS defaults"
+# shellcheck disable=SC1091
 source /kwh/config.conf; seattle
 
 # Activate cron jobs
@@ -281,6 +284,6 @@ echo "Rebooting now is highly recommended, as some communications will be errori
 echo "and filling log files. However, if you need to stop the reboot, you can use"
 echo "\"ctrl+c\" to kill this process without rebooting"
 echo "Press enter to reboot now..."
-read ans
+read -r ans
 sudo shutdown -r now
 fi

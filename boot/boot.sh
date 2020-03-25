@@ -11,18 +11,18 @@
 
 # lock cleanup
 date >> /kwh/log/boot.log
-sudo rm /kwh/config/SIM_LOCK >> /kwh/log/boot.log
+rm /kwh/config/SIM_LOCK | sudo tee -a /kwh/log/boot.log
 wait
 
 # stop kwh scheduler
 date >> /kwh/log/boot.log
 sudo systemctl stop cron.service
-sudo rm /var/spool/cron/crontabs/pi >> /kwh/log/boot.log
+rm /var/spool/cron/crontabs/pi | sudo tee -a /kwh/log/boot.log
 wait
 
 # shutdown wifi module
 date >> /kwh/log/boot.log
-sudo ifconfig wlan0 down >> /kwh/log/boot.log
+rm ifconfig wlan0 down | sudo tee -a /kwh/log/boot.log
 wait
 
 # sleep to ensure all needed service are up before starting up sakis3g
@@ -36,17 +36,17 @@ wait
 
 # start internet connection via sakis3g
 date >> /kwh/log/boot.log
-sudo /kwh/lib/sakis3g/sakis3g connect --console >> /kwh/log/boot.log
+/kwh/lib/sakis3g/sakis3g connect --console | sudo tee -a /kwh/log/boot.log
 wait
 
 # use three step ntp process to set time via RPi time service
 date >> /kwh/log/boot.log
-sudo ntpd -q -g >> /kwh/log/boot.log
+ntpd -q -g | sudo tee -a /kwh/log/boot.log
 wait
 
 # shut off sakis3g connection
 date >> /kwh/log/boot.log
-sudo /kwh/lib/sakis3g/sakis3g disconnect --console >> /kwh/log/boot.log
+/kwh/lib/sakis3g/sakis3g disconnect --console | sudo tee -a /kwh/log/boot.log
 wait
 
 # start simserver.service
@@ -56,8 +56,8 @@ echo "sim_server.py started in background" >> /kwh/log/boot.log
 
 # re-implement the scheduler
 date >> /kwh/log/boot.log
-sudo cp /kwh/boot/kwh_scheduler.cron /var/spool/cron/crontabs/pi >> /kwh/log/boot.log
-sudo chmod 600 /var/spool/cron/crontabs/pi >> /kwh/log/boot.log
+cp /kwh/boot/kwh_scheduler.cron /var/spool/cron/crontabs/pi | sudo tee -a /kwh/log/boot.log
+chmod 600 /var/spool/cron/crontabs/pi | sudo tee -a /kwh/log/boot.log
 sudo systemctl start cron.service
 
 #adding something to force a commit, tacohen
